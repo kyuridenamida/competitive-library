@@ -24,8 +24,8 @@ class Document:
         self.items = items
 
 
-def parse_class(class_name, filename_to_docs):
-    path = 'xml/%s' % class_name
+def parse(class_name, filename_to_docs):
+    path = 'cpp/docs/xml/%s' % class_name
     root = ET.parse(path).getroot()
     mems = access(root, 'compounddef', 'sectiondef', 'memberdef')
     publics = [c for c in mems if c.attrib['prot'] == 'public']
@@ -49,14 +49,8 @@ def parse_class(class_name, filename_to_docs):
                 filename_to_docs[basename] = [doc]
 
 
-filename_to_docs = {}
-
-
-for fname in os.listdir('xml'):
-    parse_class(fname, filename_to_docs)
-
-for filename, items in filename_to_docs.items():
-    print(filename)
-    for doc in items:
-        print(doc.fname + (doc.para if doc.para else ""))
-        print(doc.items)
+def get_dict():
+    filename_to_docs = {}
+    for fname in os.listdir('cpp/docs/xml'):
+        parse(fname, filename_to_docs)
+    return filename_to_docs

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import xml_parser
 
 
 def basename(fname):
@@ -29,7 +30,7 @@ def mkdir_open_write(path):
     return open(path, 'w')
 
 
-def page(path, fname):
+def page(path, fname, filename_to_docs):
     filepath = path + "/" + fname
     f = open(filepath, 'r')
     code = f.readlines()
@@ -61,24 +62,31 @@ def page(path, fname):
     writeln("{% endhighlight %}")
     writeln("")
 
-    doc_path = path.replace('cpp/', 'cpp/docs/') + "/" + basename(fname) + ".md"
-    if os.path.exists(doc_path):
-        docf = open(doc_path)
-        writeln("".join(docf.readlines()))
-        docf.close()
+    # doc_path = path.replace('cpp/', 'cpp/docs/') + "/" + basename(fname) + ".md"
+    # if os.path.exists(doc_path):
+    #     docf = open(doc_path)
+    #     writeln("".join(docf.readlines()))
+    #     docf.close()
+    if fname in filename_to_docs:
+        for doc in filename_to_docs[fname]:
+            writeln('{% highlight cpp %}')
+            writeln(doc.fname + (doc.para if doc.para else ''))
+            writeln('{% endhighlight %}')
+
 
     writeln("[Back](%s)" % os.path.relpath("./", path))
     f.close()
 
 
-def directory(path):
+def directory(path, filename_to_docs):
     for fname in os.listdir(path):
         if os.path.isdir(path + "/" + fname):
-            directory(path + "/" + fname)
+            directory(path + "/" + fname, filename_to_docs)
         else:
-            page(path, fname)
+            page(path, fname, filename_to_docs)
 
 
 if __name__ == '__main__':
-    directory('cpp/src')
-    directory('cpp/include')
+    filename_to_docs = xml_parser.get_dict()
+    directory('cpp/src', filename_to_docs)
+    directory('cpp/include', filename_to_docs)

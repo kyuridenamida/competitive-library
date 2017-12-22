@@ -5,6 +5,10 @@
 class UnionFind {
   vector<int> p;
 public:
+  //! \param n an integer argument.
+  //! \par title: Hoge Hoge.
+  //! \return return
+  //! \complexity complex
   UnionFind (int n) : p(n, -1) {}
   int root(int x) {
     return p[x] < 0 ? x : p[x] = root(p[x]);
